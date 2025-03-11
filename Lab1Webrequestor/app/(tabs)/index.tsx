@@ -1,9 +1,35 @@
-import React from 'react'
-import { View, Image, StyleSheet, Platform, Button, TextInput } from 'react-native';
+import React from 'react';
+import {useState} from 'react';
+import { View, Image, StyleSheet, Platform, Button, TextInput, Text } from 'react-native';
 
 
 export default function HomeScreen() {
   const [text, onChangeText] = React.useState('Enter URL');
+
+  {/** Constant to retrieve data */}
+  const [webData, setwebData] = useState(""); //states and react hooks
+
+  {/** Constant to send web package */}
+  const request = new XMLHttpRequest();
+
+
+  function handlePressButtonAsync() {
+    request.onreadystatechange = e => {
+      if (request.readyState !== 4) {
+        return;
+      }
+      if (request.status === 200) {
+        console.log("success", + request.responseText)
+        setwebData("Status: "+ request.status + " " + request.statusText + " " + request.responseText);
+      } else{
+        console.warn("error")
+        setwebData("Error: "+ request.status + " " + request.statusText + " " + request.responseText);
+      }
+    };
+    request.open ('GET', text);
+    request.send ();
+
+  }
   return (
     <View style = {styles.containerColumn} >
       <View style = {styles.containerRow}>
@@ -14,10 +40,11 @@ export default function HomeScreen() {
           value = {text}
         />
         <Button
-          title = "CLICK ME"
-          onPress = {()=> alert(" STOP PRESSING ME!" + text)}
+          title = "Goto request"
+          onPress = {()=> handlePressButtonAsync()}
           />
       </View>
+      <Text> {webData} </Text>
     </View>
   );
 }
